@@ -122,7 +122,8 @@ def image_ratio_cropping(image,ratio_width,ratio_height):
 def image_extraction_video(videopath,framerate_extraction_interval,output,
                             resize=False, horizontal_rotation=True,vertical_rotation=False,
                             new_width=1980, new_height=1080, rename_videoframe=False,
-                            new_name='initial'):
+                            new_name='initial',ratio_modification=True,
+                            ratio_width=16,ratio_height=9):
     """
     @args
     videopath: path of the video where are about to open.
@@ -181,6 +182,10 @@ def image_extraction_video(videopath,framerate_extraction_interval,output,
                 if vertical_rotation:
                     frame=vertical_rotation_function(frame)
 
+                #perform cropping to get a frame with an specific width/height ratio.
+                if ratio_modification:
+                    frame=image_ratio_cropping(frame,ratio_width,ratio_height)
+
 
                 #Rotation and resizing options depending on the given information
                 if resize:
@@ -207,20 +212,27 @@ if __name__ == '__main__':
 
     #Parser to make this code work.
     parser = argparse.ArgumentParser()
-    parser.add_argument('--video_path', type=str, default='image', help='initial image')
-    parser.add_argument('--output_directory', type=str, default='./extracted_images', help='initial image')
+    parser.add_argument('--video_path', type=str, default='video.mp4', help='path of the video that we want to use')
+    parser.add_argument('--output_directory', type=str,
+                        default='./extracted_images',
+                        help='name of the directory where we want to store the images. The foldel can be non existing')
     parser.add_argument('--fpsinterval', type=int, default=30, help='fps interval')
     parser.add_argument('--reshaped_width', type=int, default=1920,
                         help='width of the retrieved images')
     parser.add_argument('--reshaped_height', type=int, default=1080,
                         help='height of the retrieved images')
-    parser.add_argument('--resize', action='store_true', help='Save images horizontally')
-    parser.add_argument('--hrotation', action='store_true', help='Save images horizontally')
-    parser.add_argument('--vrotation', action='store_true', help='Save images vertically')
+    parser.add_argument('--resize', action='store_true', help='Use the arg to save images in the choosen reshaped size')
+    parser.add_argument('--hrotation', action='store_true', help='Use the arg to save images in horizontal position')
+    parser.add_argument('--vrotation', action='store_true', help='Use the arg to save images in vertical position')
+    parser.add_argument('--ratio_modification', action='store_true', help='Use the arg to modify the width to height ratio in the extraacted frames')
+    parser.add_argument('--ratio_width', type=int, default=16,
+                        help='ratio of the width in terms of width to height')
+    parser.add_argument('--ratio_height', type=int, default=9,
+                        help='ratio of the height in terms of width to height')
     parser.add_argument('--rename_videoframe', action='store_false',
-    help='use the same name as the video name for the images')
+                        help='Use the arg to rename the video name for the images')
     parser.add_argument('--output_file_name', type=str, default='video',
-    help='name of the extracted images')
+                        help='name of the extracted images')
 
     args=parser.parse_args()
 
@@ -229,4 +241,5 @@ if __name__ == '__main__':
                                 resize=args.resize, horizontal_rotation=args.hrotation,
                                 vertical_rotation=args.vrotation,new_width=args.reshaped_width,
                                 new_height=args.reshaped_height,rename_videoframe=args.rename_videoframe,
-                                new_name=args.output_file_name)
+                                new_name=args.output_file_name,ratio_modification=args.ratio_modification,
+                                ratio_width=args.ratio_width,ratio_height=args.ratio_height)
